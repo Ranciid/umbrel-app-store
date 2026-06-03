@@ -3,12 +3,11 @@ version: "3.7"
 services:
   app_proxy:
     environment:
-      APP_HOST: nomad_admin
+      APP_HOST: ranciid-nomad_admin_1
       APP_PORT: 8080
 
   admin:
     image: ghcr.io/crosstalk-solutions/project-nomad:latest
-    container_name: nomad_admin
     restart: unless-stopped
     pull_policy: always
     extra_hosts:
@@ -21,7 +20,7 @@ services:
       NODE_ENV: production
       PORT: 8080
       HOST: 0.0.0.0
-      URL: http://${DEVICE_DOMAIN_NAME}/project-nomad
+      URL: http://${DEVICE_DOMAIN_NAME}/ranciid-nomad
       APP_KEY: 7f0e9b7c4b6d8a3f2c1e9d5a8b0f6c4d
       DB_HOST: mysql
       DB_PORT: 3306
@@ -40,7 +39,6 @@ services:
 
   mysql:
     image: mysql:8.0
-    container_name: nomad_mysql
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: M8zQ2rV7xL5pN9cT4wY6sK3d
@@ -57,7 +55,6 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: nomad_redis
     restart: unless-stopped
     volumes:
       - ${APP_DATA_DIR}/data/redis:/data
@@ -69,7 +66,6 @@ services:
 
   dozzle:
     image: amir20/dozzle:v10.0
-    container_name: nomad_dozzle
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

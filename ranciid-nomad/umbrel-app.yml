@@ -1,0 +1,25 @@
+manifestVersion: 1
+id: ranciid-nomad
+name: Project N.O.M.A.D.
+tagline: Offline-first knowledge and AI operations platform
+icon: https://raw.githubusercontent.com/Ranciid/umbrel-app-store/main/ranciid-nomad/icon.png
+category: Developer Tools
+version: "1.32.1"
+port: 8080
+description: >-
+  Project N.O.M.A.D. is a self-hosted offline-first knowledge, education,
+  mapping, AI, and data tools platform.
+developer: Crosstalk Solutions
+website: https://www.projectnomad.us
+submitter: Ranciid
+submission: https://github.com/Ranciid/umbrel-app-store
+repo: https://github.com/Crosstalk-Solutions/project-nomad
+support: https://github.com/Crosstalk-Solutions/project-nomad/issues
+gallery:
+  - https://raw.githubusercontent.com/Ranciid/umbrel-app-store/main/ranciid-nomad/icon.png
+releaseNotes: >-
+  Initial Umbrel community package for Project N.O.M.A.D.
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""

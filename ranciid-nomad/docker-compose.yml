@@ -1,0 +1,67 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: ward-project-nomad_admin_1
+      APP_PORT: 8080
+
+  admin:
+    image: ghcr.io/crosstalk-solutions/project-nomad:latest
+    restart: unless-stopped
+    pull_policy: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ${APP_DATA_DIR}/data/storage:/app/storage
+      - /var/run/docker.sock:/var/run/docker.sock
+      - nomad-update-shared:/app/update-shared
+    environment:
+      NODE_ENV: production
+      PORT: 8080
+      HOST: 0.0.0.0
+      URL: http://${DEVICE_DOMAIN_NAME}/project-nomad
+      APP_KEY: hdu3289hr87u9ohdfuijqfui923
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: nomad
+      DB_USER: nomad_user
+      DB_PASSWORD: Safari!1
+      DB_NAME: nomad
+      DB_SSL: "false"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      LOG_LEVEL: info
+      DISABLE_COMPRESSION: "false"
+    depends_on:
+      - mysql
+      - redis
+
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: change-this-root-password
+      MYSQL_DATABASE: nomad
+      MYSQL_USER: nomad_user
+      MYSQL_PASSWORD: Safari!1
+    volumes:
+      - ${APP_DATA_DIR}/data/mysql:/var/lib/mysql
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - ${APP_DATA_DIR}/data/redis:/data
+
+  dozzle:
+    image: amir20/dozzle:v10.0
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      DOZZLE_ENABLE_ACTIONS: "false"
+      DOZZLE_ENABLE_SHELL: "false"
+
+volumes:
+  nomad-update-shared:

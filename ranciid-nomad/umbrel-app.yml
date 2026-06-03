@@ -8,7 +8,9 @@ version: "1.32.1"
 port: 8080
 description: >-
   Project N.O.M.A.D. is a self-hosted offline-first knowledge, education,
-  mapping, AI, and data tools platform.
+  mapping, AI, and data tools platform. It includes tools such as Kiwix,
+  Kolibri, CyberChef, local AI integrations, maps, notes, and service
+  management from a browser-based Command Center.
 developer: Crosstalk Solutions
 website: https://www.projectnomad.us
 submitter: Ranciid
@@ -18,7 +20,9 @@ support: https://github.com/Crosstalk-Solutions/project-nomad/issues
 gallery:
   - https://raw.githubusercontent.com/Ranciid/umbrel-app-store/main/ranciid-nomad/icon.png
 releaseNotes: >-
-  Initial Umbrel community package for Project N.O.M.A.D.
+  Initial Umbrel community package for Project N.O.M.A.D. with persistent
+  storage, MySQL, Redis, Dozzle, Docker socket access, and the required
+  project-nomad_default Docker network.
 dependencies: []
 path: ""
 defaultUsername: ""

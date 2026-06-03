@@ -3,7 +3,7 @@ version: "3.7"
 services:
   app_proxy:
     environment:
-      APP_HOST: ward-project-nomad_admin_1
+      APP_HOST: ranciid-nomad_admin_1
       APP_PORT: 8080
 
   admin:

@@ -1,0 +1,35 @@
+manifestVersion: 1.1
+id: ranciid-musicseerr
+category: media
+name: MusicSeerr
+version: "1.3.4"
+tagline: Self-hosted music requests and discovery for Lidarr
+icon: https://raw.githubusercontent.com/Ranciid/umbrel-app-store/main/ranciid-musicseerr/icon.png
+description: >-
+  MusicSeerr is a self-hosted music request, discovery, and playback app built around Lidarr.
+  Search MusicBrainz, request albums, browse your Lidarr library, and stream music through
+  Jellyfin, Navidrome, Plex, local files, or YouTube.
+
+  SETUP: On first launch, create the admin account, then go to Settings and add your Lidarr URL
+  and API key. If you use the optional local music mount, set Settings > Local Files > Music
+  Directory Path to /music.
+developer: HabiRabbu
+website: https://musicseerr.com
+repo: https://github.com/HabiRabbu/MusicSeerr
+support: https://github.com/HabiRabbu/MusicSeerr/issues
+port: 8688
+gallery:
+  - https://raw.githubusercontent.com/Ranciid/umbrel-app-store/main/ranciid-musicseerr/gallery-1.png
+  - https://raw.githubusercontent.com/Ranciid/umbrel-app-store/main/ranciid-musicseerr/gallery-2.png
+  - https://raw.githubusercontent.com/Ranciid/umbrel-app-store/main/ranciid-musicseerr/gallery-3.png
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+releaseNotes: >-
+  Updated package to MusicSeerr v1.3.4. This release fixes the home page "Verify Failed"
+  migration issue and improves multi-album download polling.
+dependencies: []
+permissions:
+  - STORAGE_DOWNLOADS
+submitter: Ranciid
+submission: https://github.com/Ranciid/umbrel-app-store

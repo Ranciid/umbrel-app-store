@@ -1,0 +1,28 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: ranciid-musicseerr_server_1
+      APP_PORT: 8688
+      PROXY_AUTH_ADD: "false"
+
+  server:
+    image: ghcr.io/habirabbu/musicseerr:v1.3.4
+    restart: unless-stopped
+    environment:
+      PUID: 1000
+      PGID: 1000
+      PORT: 8688
+      TZ: America/Los_Angeles
+    volumes:
+      - ${APP_DATA_DIR}/data/config:/app/config
+      - ${APP_DATA_DIR}/data/cache:/app/cache
+      # Optional local playback/library mount. In MusicSeerr set Settings > Local Files > Music Directory Path to /music
+      - ${UMBREL_ROOT}/home/Downloads:/music:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8688/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 15s
+      retries: 3

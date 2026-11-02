@@ -5,8 +5,8 @@ services:
     user: "1000:1000"
     environment:
       - TZ=America/Los_Angeles
-      - SLSKD_DOWNLOADS_DIR=/downloads/soulseek/complete
-      - SLSKD_INCOMPLETE_DIR=/downloads/soulseek/incomplete
+      - SLSKD_INCOMPLETE_DIR: /downloads/incomplete
+      - SLSKD_DOWNLOADS_DIR: /downloads/complete
       - SLSKD_REMOTE_CONFIGURATION=false
     volumes:
       - ${APP_DATA_DIR}/data/slskd:/app

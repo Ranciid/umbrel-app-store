@@ -1,0 +1,39 @@
+services:
+  slskd:
+    image: slskd/slskd:latest
+    restart: unless-stopped
+    user: "1000:1000"
+    environment:
+      - TZ=America/Los_Angeles
+      - SLSKD_DOWNLOADS_DIR=/downloads/soulseek/complete
+      - SLSKD_INCOMPLETE_DIR=/downloads/soulseek/incomplete
+      - SLSKD_REMOTE_CONFIGURATION=false
+    volumes:
+      - ${APP_DATA_DIR}/data/slskd:/app
+      - /home/umbrel/umbrel/Home/Downloads:/downloads
+    ports:
+      - "5030:5030"
+      - "50300:50300"
+    networks:
+      - default
+      - umbrel_main_network
+  soularr:
+    image: mrusse08/soularr:latest
+    restart: unless-stopped
+    user: "1000:1000"
+    environment:
+      - TZ=America/Los_Angeles
+      - SCRIPT_INTERVAL=300
+      - WEBUI_ENABLED=true
+      - WEBUI_PORT=8265
+    volumes:
+      - ${APP_DATA_DIR}/data/soularr:/data
+      - /home/umbrel/umbrel/Home/Downloads:/downloads
+    ports:
+      - "8265:8265"
+    networks:
+      - default
+      - umbrel_main_network
+networks:
+  umbrel_main_network:
+    external: true

@@ -1,0 +1,16 @@
+manifestVersion: 1
+id: ranciid-soulseek
+name: Soulseek Automation
+version: "1.0.0"
+tagline: Soulseek downloads and Lidarr automation
+icon: https://raw.githubusercontent.com/Ranciid/umbrel-app-store/master/ranciid-soulseek/icon.svg
+category: media
+port: 5030
+description: >-
+  slskd provides a Soulseek web client, and Soularr automates Lidarr downloads and imports.
+developer: Ranciid
+website: https://github.com/mrusse/soularr
+repo: https://github.com/mrusse/soularr
+support: https://github.com/mrusse/soularr/issues
+submitter: Ranciid
+submission: https://github.com/Ranciid/umbrel-app-store

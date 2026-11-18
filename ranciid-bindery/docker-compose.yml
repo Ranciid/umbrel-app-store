@@ -8,11 +8,33 @@ services:
       # Bindery manages its own accounts, including first-run admin setup.
       PROXY_AUTH_ADD: "false"
 
+  # Umbrel/Docker can create bind-mount folders as root:root (mode 0755).
+  # Bindery runs as 1000:1000 and cannot initialize its SQLite database there.
+  # This one-time setup fixes ONLY Bindery's private config and the two library
+  # root directories, not the existing contents of shared Downloads.
+  init_perms:
+    image: alpine:3.22.1@sha256:4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1
+    user: "0:0"
+    restart: on-failure
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        mkdir -p /config /downloads/books /downloads/audiobooks
+        chown -R 1000:1000 /config
+        chown 1000:1000 /downloads/books /downloads/audiobooks
+    volumes:
+      - ${APP_DATA_DIR}/data/config:/config
+      - ${UMBREL_ROOT}/data/storage/downloads:/downloads
+
   server:
     image: ghcr.io/vavallee/bindery:1.52.0
     restart: unless-stopped
     init: true
     user: "1000:1000"
+    depends_on:
+      init_perms:
+        condition: service_completed_successfully
     stop_grace_period: 1m
     environment:
       BINDERY_PORT: "8787"

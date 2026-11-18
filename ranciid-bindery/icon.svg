@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Bindery app icon">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#182B51"/>
+      <stop offset="1" stop-color="#080F22"/>
+    </linearGradient>
+    <linearGradient id="page" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F5E8CE"/>
+      <stop offset="1" stop-color="#BFA67B"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="110" fill="url(#bg)"/>
+  <path d="M83 126c64-20 124-15 173 18v232c-53-31-111-37-173-17z" fill="#DABF91" opacity=".24"/>
+  <path d="M429 126c-64-20-124-15-173 18v232c53-31 111-37 173-17z" fill="#DABF91" opacity=".14"/>
+  <path d="M100 143c57-12 105-3 156 27v208c-51-28-100-35-156-20z" fill="none" stroke="url(#page)" stroke-width="17" stroke-linejoin="round"/>
+  <path d="M412 143c-57-12-105-3-156 27v208c51-28 100-35 156-20z" fill="none" stroke="url(#page)" stroke-width="17" stroke-linejoin="round"/>
+  <path d="M256 170v211" stroke="#EEDAB7" stroke-width="14" stroke-linecap="round"/>
+  <path d="M126 191c33-4 65 1 94 16M126 234c33-4 65 1 94 16M126 277c33-4 65 1 94 16M292 207c28-15 61-20 94-16M292 250c28-15 61-20 94-16M292 293c28-15 61-20 94-16" stroke="#C5AE87" stroke-width="9" stroke-linecap="round" opacity=".72"/>
+  <path d="M101 389h310" stroke="#EBD6B0" stroke-width="13" stroke-linecap="round"/>
+</svg>

@@ -5,7 +5,7 @@ A native Umbrel community-store package for [Bindery](https://github.com/vavalle
 ## Included
 
 - `umbrel-app.yml`: app-store listing, gallery, permissions, and launch details.
-- `docker-compose.yml`: Bindery v1.52.0, the native Umbrel app proxy, persistent configuration, shared storage, and networking to installed Umbrel services.
+- `docker-compose.yml`: Bindery v1.52.0, the native Umbrel app proxy, a one-shot permission initializer, persistent configuration, shared storage, and networking to installed Umbrel services.
 - `icon.svg`: bundled store artwork.
 - `README.md`: integration, troubleshooting, and storage guidance.
 
@@ -20,6 +20,36 @@ This installs **Bindery only**, rather than duplicating existing Prowlarr, SABnz
 5. Configure an indexer and a download client in Bindery's **Settings** before searching.
 
 Umbrel injects `APP_DATA_DIR` and `UMBREL_ROOT` during an app-store install. A standalone `docker compose up` from a shell requires setting these yourself and does not supply Umbrel's `app_proxy` service.
+
+## First-run permissions and upgrading from the original package
+
+Umbrel can create new Docker bind-mount directories owned by `root:root` with permissions `0755`. Because Bindery runs as UID/GID `1000:1000`, this causes a crash loop with `database parent directory "/config" is not writable`.
+
+**Fixed in Umbrel packaging revision 1.52.1** (the Bindery application itself remains pinned to upstream v1.52.0):
+
+- Before Bindery starts, a root-owned, one-shot Alpine init container creates `/config`, `/downloads/books`, and `/downloads/audiobooks`.
+- It assigns UID/GID `1000:1000` to the private `/config` tree and **only** the two shared library root directories.
+- It does **not** recursively change ownership of the entire shared `/downloads` tree or existing book/audiobook content.
+- The application server starts only after the initialization container successfully completes and continues running non-root.
+
+**Existing installations:** After merging this update, refresh the custom app store in Umbrel and update Bindery to package version 1.52.1. A data-preserving app update should rerun the initializer automatically. Do not uninstall the app simply to fix permissions, since uninstalling may remove its private configuration.
+
+If Umbrel does not offer an update, fix your currently installed volume directly on the Umbrel host. The following commands act only on the already-created Bindery private directory and the two book library roots (not the rest of Downloads):
+
+```bash
+ROOT=/home/umbrel/umbrel
+sudo mkdir -p "$ROOT/app-data/ranciid-bindery/data/config" \
+  "$ROOT/data/storage/downloads/books" \
+  "$ROOT/data/storage/downloads/audiobooks"
+sudo chown -R 1000:1000 "$ROOT/app-data/ranciid-bindery/data/config"
+sudo chown 1000:1000 \
+  "$ROOT/data/storage/downloads/books" \
+  "$ROOT/data/storage/downloads/audiobooks"
+sudo docker restart ranciid-bindery_server_1
+sudo docker logs --tail=40 ranciid-bindery_server_1
+```
+
+**Verify host mount paths before running this workaround** on customized, migrated, or external-drive installs. Run `sudo docker inspect ranciid-bindery_server_1 --format '{{range .Mounts}}{{println .Destination "=>" .Source}}{{end}}'` and compare the `/config` and `/downloads` sources. The commands above assume the conventional `/home/umbrel/umbrel` root.
 
 ## Shared storage
 
@@ -72,7 +102,7 @@ For ebooks, you can use Bindery's OPDS catalogue or point a separate ebook reade
 - **Do not** port-forward 8787 to the Internet. For remote access, prefer Tailscale or an authenticated reverse proxy.
 - API credentials entered in Bindery are stored in its private configuration volume. Do **not** commit secrets to this repository.
 - For OpenLibrary metadata rate limits, optionally set `BINDERY_CONTACT` to your own contact address in the container environment, following [upstream instructions](https://github.com/vavallee/bindery/blob/main/docs/QUICKSTART.md).
-- The Docker image is **pinned to version 1.52.0** rather than `latest`, so Umbrel updates will be intentional and reviewable. Read [Bindery release notes](https://github.com/vavallee/bindery/releases) before changing the image tag and manifest version.
+- The Docker image is **pinned to version 1.52.0** rather than `latest`, so Umbrel updates will be intentional and reviewable. Read [Bindery release notes](https://github.com/vavallee/bindery/releases) before changing the image tag. The manifest version can also be incremented separately for an Umbrel packaging-only fix.
 - Back up both the private `data/config` directory and shared `books` / `audiobooks` directories. Removing the app may remove private app data; shared storage is separate.
 
 To check the container on Umbrel, use `sudo docker logs --tail=100 ranciid-bindery_server_1`. Bindery's upstream image includes a built-in Docker health check; there is no shell inside its distroless container.

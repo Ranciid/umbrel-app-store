@@ -3,7 +3,7 @@ id: ranciid-bindery
 name: Bindery
 tagline: Automate ebooks and audiobooks like Radarr and Sonarr
 category: media
-version: "1.52.0"
+version: "1.52.1"
 icon: https://raw.githubusercontent.com/Ranciid/umbrel-app-store/main/ranciid-bindery/icon.svg
 description: >-
   Bindery is a self-hosted ebook and audiobook manager and a modern alternative
@@ -35,8 +35,9 @@ dependencies: []
 permissions:
   - STORAGE_DOWNLOADS
 releaseNotes: >-
-  Initial Umbrel community package for Bindery v1.52.0 with native app proxy,
-  a persistent configuration volume, shared ebook/audiobook libraries,
-  and connectivity to existing Prowlarr and SABnzbd services.
+  Umbrel packaging revision 1.52.1 fixes first-run permission denied crashes:
+  a root initialization service now creates and assigns ownership of the
+  private SQLite config and ebook/audiobook library directories before starting
+  Bindery as UID 1000. The upstream Bindery image remains v1.52.0.
 submitter: Ranciid
 submission: https://github.com/Ranciid/umbrel-app-store

@@ -1,0 +1,42 @@
+manifestVersion: 1.1
+id: ranciid-bindery
+name: Bindery
+tagline: Automate ebooks and audiobooks like Radarr and Sonarr
+category: media
+version: "1.52.0"
+icon: https://raw.githubusercontent.com/Ranciid/umbrel-app-store/main/ranciid-bindery/icon.svg
+description: >-
+  Bindery is a self-hosted ebook and audiobook manager and a modern alternative
+  to Readarr. Follow authors, track missing titles, search supported Newznab
+  and Torznab indexers, automate downloads, validate and organize files,
+  manage household requests, and integrate with Calibre and Audiobookshelf.
+
+  This Umbrel package integrates with your existing Prowlarr and SABnzbd
+  installations without installing duplicate services. Ebook files are stored
+  in shared Downloads/books and audiobooks in Downloads/audiobooks, accessible
+  to other Umbrel media apps. On first launch, create your Bindery admin
+  account, then connect your indexers and download client under Settings.
+
+  Supports ebook and audiobook monitoring, metadata providers, OPDS access,
+  a built-in request system, and persistent backups of its local database.
+developer: vavallee and contributors
+website: https://github.com/vavallee/bindery
+repo: https://github.com/vavallee/bindery
+support: https://github.com/vavallee/bindery/issues
+port: 8787
+path: ""
+gallery:
+  - https://raw.githubusercontent.com/vavallee/bindery/main/docs/screenshots/authors-desktop-dark.png
+  - https://raw.githubusercontent.com/vavallee/bindery/main/docs/screenshots/books-desktop-dark.png
+  - https://raw.githubusercontent.com/vavallee/bindery/main/docs/screenshots/queue-desktop-dark.png
+defaultUsername: ""
+defaultPassword: ""
+dependencies: []
+permissions:
+  - STORAGE_DOWNLOADS
+releaseNotes: >-
+  Initial Umbrel community package for Bindery v1.52.0 with native app proxy,
+  a persistent configuration volume, shared ebook/audiobook libraries,
+  and connectivity to existing Prowlarr and SABnzbd services.
+submitter: Ranciid
+submission: https://github.com/Ranciid/umbrel-app-store

@@ -1,0 +1,43 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: ranciid-bindery_server_1
+      APP_PORT: 8787
+      # Bindery manages its own accounts, including first-run admin setup.
+      PROXY_AUTH_ADD: "false"
+
+  server:
+    image: ghcr.io/vavallee/bindery:1.52.0
+    restart: unless-stopped
+    init: true
+    user: "1000:1000"
+    stop_grace_period: 1m
+    environment:
+      BINDERY_PORT: "8787"
+      BINDERY_PUID: "1000"
+      BINDERY_PGID: "1000"
+      BINDERY_DATA_DIR: /config
+      BINDERY_DB_PATH: /config/bindery.db
+      BINDERY_LIBRARY_DIR: /downloads/books
+      BINDERY_AUDIOBOOK_DIR: /downloads/audiobooks
+      BINDERY_DOWNLOAD_DIR: /downloads
+      BINDERY_LOG_LEVEL: info
+    volumes:
+      # Private SQLite database, cache, and backups.
+      - ${APP_DATA_DIR}/data/config:/config
+      # The same shared path used by Umbrel Prowlarr, SABnzbd, and Audiobookshelf.
+      # One mount for downloads + libraries enables hardlinks on the same filesystem.
+      - ${UMBREL_ROOT}/data/storage/downloads:/downloads
+    # Direct LAN/OPDS access in addition to the native Umbrel app tile.
+    # Do not forward this port to the public internet.
+    ports:
+      - "8787:8787"
+    networks:
+      - default
+      - umbrel_main_network
+
+networks:
+  umbrel_main_network:
+    external: true

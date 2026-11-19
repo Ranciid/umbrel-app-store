@@ -3,7 +3,7 @@ id: ranciid-bindery
 name: Bindery + Kindle
 tagline: Book automation with native Send to Kindle
 category: media
-version: "1.52.4"
+version: "1.52.5"
 icon: https://raw.githubusercontent.com/Ranciid/umbrel-app-store/main/ranciid-bindery/icon.svg
 description: >-
   Bindery is a self-hosted ebook and audiobook manager and a modern alternative
@@ -12,7 +12,14 @@ description: >-
   manage household requests, and integrate with Calibre and Audiobookshelf.
 
 
-  This Kindle edition adds native Send to Kindle through SMTP2GO or another TLS-enabled SMTP provider.\n  Manual and optional automatic delivery of newly imported EPUB/PDF files,\n  send history, and duplicate prevention are built directly into Bindery.\n  Kindle sending is disabled until configured by the administrator.\n\n  This Umbrel package integrates with your existing Prowlarr and SABnzbd
+  This Kindle edition adds native Send to Kindle through SMTP2GO or another
+  TLS-enabled SMTP provider. Manually select one or more Kindle addresses
+  from a device picker, or enable optional automatic delivery of newly
+  imported EPUB/PDF files. Sending history and duplicate prevention are
+  built directly into Bindery. Automatic Kindle sending is disabled until
+  configured by the administrator.
+
+  This Umbrel package integrates with your existing Prowlarr and SABnzbd
   installations without installing duplicate services. Ebook files are stored
   in shared Downloads/books and audiobooks in Downloads/audiobooks, accessible
   to other Umbrel media apps. On first launch, create your Bindery admin
@@ -36,10 +43,9 @@ dependencies: []
 permissions:
   - STORAGE_DOWNLOADS
 releaseNotes: >-
-  Native Kindle edition 1.52.4 (based on upstream Bindery 1.52.0) adds
-  Settings → Kindle, SMTP2GO configuration, a Send to Kindle button on
-  book details, and optional deduplicated automatic delivery.
-  Existing app data and volumes are preserved. This release requires the
-  GHCR Kindle image to be public before installing.
+  Native Kindle edition 1.52.5 adds a recipient picker for Send to Kindle.
+  Choose one or more configured Kindle addresses for each manual delivery.
+  An existing send attempt for one Kindle no longer blocks a different one.
+  Automatic sending remains unchanged. Existing database and storage persist.
 submitter: Ranciid
 submission: https://github.com/Ranciid/umbrel-app-store

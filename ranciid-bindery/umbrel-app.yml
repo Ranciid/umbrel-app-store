@@ -1,9 +1,9 @@
 manifestVersion: 1.1
 id: ranciid-bindery
-name: Bindery + Kindle
-tagline: Book automation with native wireless Kindle delivery
+name: Bindery
+tagline: Automate ebooks and audiobooks like Radarr and Sonarr
 category: media
-version: "1.52.2"
+version: "1.52.3"
 icon: https://raw.githubusercontent.com/Ranciid/umbrel-app-store/main/ranciid-bindery/icon.svg
 description: >-
   Bindery is a self-hosted ebook and audiobook manager and a modern alternative
@@ -11,9 +11,6 @@ description: >-
   and Torznab indexers, automate downloads, validate and organize files,
   manage household requests, and integrate with Calibre and Audiobookshelf.
 
-  This edition adds native Send to Kindle using SMTP, including a settings tab,
-  per-book send button, optional automatic delivery, and deduplicated send
-  history. No Calibre or extra app is needed for Kindle delivery.
 
   This Umbrel package integrates with your existing Prowlarr and SABnzbd
   installations without installing duplicate services. Ebook files are stored
@@ -39,8 +36,9 @@ dependencies: []
 permissions:
   - STORAGE_DOWNLOADS
 releaseNotes: >-
-  Ranciid Kindle edition 1.52.2 adds built-in Send to Kindle, authenticated SMTP,
-  optional auto-send of newly imported ebooks, and a durable delivery history.
-  Existing app data and first-run permissions handling are retained.
+  Packaging recovery 1.52.3 restores the known working upstream Bindery 1.52.0
+  image because the custom Kindle image is not yet built. Existing configuration
+  and downloads are preserved. Kindle support will be released separately
+  after the custom image passes build tests.
 submitter: Ranciid
 submission: https://github.com/Ranciid/umbrel-app-store

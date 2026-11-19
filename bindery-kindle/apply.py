@@ -83,6 +83,14 @@ replace_once(
     "case 'calibre': return <CalibreTab />",
     "case 'calibre': return <CalibreTab />\n      case 'kindle': return <KindleTab />",
 )
+# SettingsSearch's upstream SettingsTabId does not include Kindle.
+# Keep the Kindle settings tab navigable, but leave it out of search's
+# strictly typed index until a full search-index migration is made.
+replace_once(
+    "web/src/pages/SettingsPage.tsx",
+    "const ids: Tab[] = ['general', 'about', ...(isAdmin ? ADMIN_GROUPS.flatMap(g => g.tabs) : [])]",
+    "const ids = ['general', 'about', ...(isAdmin ? ADMIN_GROUPS.flatMap(g => g.tabs).filter(t => t !== 'kindle') : [])] as Exclude<Tab, 'kindle'>[]",
+)
 replace_once(
     "web/src/pages/BookDetailPage.tsx",
     "import CalibreDeliveryChip from '../components/CalibreDeliveryChip'",

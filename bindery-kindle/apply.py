@@ -45,6 +45,7 @@ replace_once(
 \t\tr.Group(func(r chi.Router) {
 \t\t\tr.Use(auth.RequireAdmin)
 \t\t\tr.Get("/kindle/config", kindleHandler.Config)
+\t\t\tr.Get("/kindle/recipients", kindleHandler.Recipients)
 \t\t\tr.Put("/kindle/config", kindleHandler.SaveConfig)
 \t\t\tr.Post("/kindle/test", kindleHandler.Test)
 \t\t\tr.Post("/kindle/send/{id}", kindleHandler.SendBook)

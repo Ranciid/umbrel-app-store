@@ -15,6 +15,7 @@ import (
     "mime"
     "net"
     "net/mail"
+    "net/http"
     "net/smtp"
     "os"
     "path/filepath"

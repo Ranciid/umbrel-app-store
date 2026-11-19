@@ -1,4 +1,4 @@
-# Bindery for Ranciid's Ports (Umbrel)
+> **Current release 1.52.3:** This package currently uses the official upstream Bindery 1.52.0 image. The custom Send to Kindle feature described below is **not available in this release** because its build failed. Install/update only for normal Bindery functionality. Native Kindle functionality remains under development and will be enabled after a tested custom image is published.\n\n# Bindery for Ranciid's Ports (Umbrel)
 
 A native Umbrel community-store package for the Kindle-enabled edition of [Bindery](https://github.com/vavallee/bindery), an ebook and audiobook library automation service and Readarr alternative.
 

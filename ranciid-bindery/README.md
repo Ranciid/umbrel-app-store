@@ -77,7 +77,7 @@ This Umbrel package uses a custom build of **Bindery v1.52.0**, plus a source-le
 - For a one-time send, open a Bindery book page and click **Send to Kindle**.
 - To send future imports automatically, enable **Automatically send newly imported EPUB/PDF books**. This starts from the next book file registered after you enable it, so existing books are **not** bulk-emailed.
 
-**Avoid the old CWA duplicate loop:** Change **General → File Naming → Ebook import mode** from `External` to `Auto`, clear the External Drop folder and Calibre-tab CWA ingest path, set Calibre **Write integration** to `Off`, and disable Calibre library import/sync if you no longer use Calibre. Bindery then writes the final ebook under `/downloads/books`. Keep Audiobook import mode `Auto` as appropriate. Do not delete your original Calibre library until you confirm the Kindle setup works.
+**Avoid the old CWA duplicate loop:** Change **General → File Naming → Ebook import mode** from `External` to `Auto`, clear the External Drop folder and Calibre-tab CWA ingest path, set Calibre **Write integration** to `Off`, and disable Calibre library import/sync if you no longer use Calibre. **Also change Settings → Root Folders → Default root folder back to `/downloads/books`, and update authors still assigned to `/calibre-library`.** The root folder setting overrides the Docker environment variable; without this correction, switching modes could write unregistered files into Calibre's managed library. Bindery then writes the final ebook under `/downloads/books`. Keep Audiobook import mode `Auto` as appropriate. Do not delete your original Calibre library until you confirm the Kindle setup works.
 
 **Security and delivery guarantees:**
 

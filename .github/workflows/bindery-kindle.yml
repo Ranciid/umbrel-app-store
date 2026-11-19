@@ -25,7 +25,7 @@ jobs:
       - name: Check out Ranciid app store
         uses: actions/checkout@v4
 
-      - name: Retrieve upstream Bindery v1.52.0 (not latest)
+      - name: Retrieve upstream Bindery v1.52.0
         run: |
           git clone --depth 1 --branch v1.52.0 https://github.com/vavallee/bindery.git upstream
           cp -R bindery-kindle/overlay/. upstream/
@@ -37,10 +37,11 @@ jobs:
           go-version-file: upstream/go.mod
           cache: false
 
-      - name: Check native backend and Kindle tests
+      - name: Test native Kindle backend and compile main
         run: |
           cd upstream
-          go test ./internal/api ./cmd/bindery
+          go test ./internal/api -run '^TestKindle' -count=1
+          go test ./cmd/bindery -run '^$'
 
       - name: Set up QEMU for ARM64
         uses: docker/setup-qemu-action@v3

@@ -32,3 +32,32 @@ func TestKindleConfigNeedsTLSAndCredentials(t *testing.T) {
     wrongRecipient:=good; wrongRecipient.Recipients="attacker@example.org"
     if err:=wrongRecipient.validate();err==nil {t.Fatal("non-Kindle recipient must be refused")}
 }
+
+
+func TestSelectKindleRecipients(t *testing.T) {
+    configured:="Ranciid@kindle.com, Autumnward@kindle.com"
+    cases:=[]struct {
+        name string
+        selected []string
+        want []string
+        ok bool
+    }{
+        {"single device",[]string{"ranciid@kindle.com"},[]string{"ranciid@kindle.com"},true},
+        {"other device",[]string{"autumnward@kindle.com"},[]string{"autumnward@kindle.com"},true},
+        {"both devices",[]string{"AUTUMNWARD@KINDLE.COM","ranciid@kindle.com"},[]string{"autumnward@kindle.com","ranciid@kindle.com"},true},
+        {"none",nil,nil,false},
+        {"unconfigured Kindle",[]string{"stranger@kindle.com"},nil,false},
+        {"external email",[]string{"stranger@example.org"},nil,false},
+        {"duplicate",[]string{"Ranciid@kindle.com","ranciid@kindle.com"},nil,false},
+        {"partial unauthorized",[]string{"ranciid@kindle.com","stranger@kindle.com"},nil,false},
+    }
+    for _,tc:=range cases {
+        t.Run(tc.name,func(t *testing.T){
+            got,err:=selectKindleRecipients(configured,tc.selected)
+            if (err==nil)!=tc.ok {t.Fatalf("selectKindleRecipients returned %v, err %v",got,err)}
+            if err!=nil{return}
+            if len(got)!=len(tc.want){t.Fatalf("got %v, want %v",got,tc.want)}
+            for i:=range got {if got[i]!=tc.want[i] {t.Fatalf("got %v, want %v",got,tc.want)}}
+        })
+    }
+}

@@ -6,7 +6,7 @@ export default function SendToKindleButton({ bookId }: { bookId: number }) {
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
 
-  const send = async (force: boolean) => {
+  const send = async (force: boolean): Promise<void> => {
     setBusy(true)
     setMessage('')
     try {

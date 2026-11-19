@@ -1,0 +1,71 @@
+name: Build native Bindery Kindle image
+
+on:
+  pull_request:
+    paths:
+      - "bindery-kindle/**"
+      - "ranciid-bindery/**"
+      - ".github/workflows/bindery-kindle.yml"
+  push:
+    branches: [main]
+    paths:
+      - "bindery-kindle/**"
+      - "ranciid-bindery/**"
+      - ".github/workflows/bindery-kindle.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-kindle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Ranciid app store
+        uses: actions/checkout@v4
+
+      - name: Retrieve upstream Bindery v1.52.0 (not latest)
+        run: |
+          git clone --depth 1 --branch v1.52.0 https://github.com/vavallee/bindery.git upstream
+          cp -R bindery-kindle/overlay/. upstream/
+          python3 bindery-kindle/apply.py upstream
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: upstream/go.mod
+          cache: false
+
+      - name: Check native backend and Kindle tests
+        run: |
+          cd upstream
+          go test ./internal/api ./cmd/bindery
+
+      - name: Set up QEMU for ARM64
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR when publishing
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build (and publish after merge)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./upstream
+          file: ./upstream/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          platforms: ${{ github.event_name == 'pull_request' && 'linux/amd64' || 'linux/amd64,linux/arm64' }}
+          tags: ghcr.io/ranciid/bindery-kindle:1.52.0-kindle.1
+          build-args: |
+            VERSION=1.52.0-kindle.1
+            COMMIT=${{ github.sha }}
+          cache-from: type=gha,scope=bindery-kindle
+          cache-to: type=gha,mode=max,scope=bindery-kindle

@@ -28,7 +28,7 @@ services:
       - ${UMBREL_ROOT}/data/storage/downloads:/downloads
 
   server:
-    image: ghcr.io/vavallee/bindery:1.52.0
+    image: ghcr.io/ranciid/bindery-kindle:1.52.0-kindle.1
     restart: unless-stopped
     init: true
     user: "1000:1000"
@@ -46,6 +46,8 @@ services:
       BINDERY_AUDIOBOOK_DIR: /downloads/audiobooks
       BINDERY_DOWNLOAD_DIR: /downloads
       BINDERY_LOG_LEVEL: info
+      # Kindle SMTP credentials are entered securely in Settings → Kindle.
+      # No SMTP secrets belong in Docker Compose or this public GitHub repo.
     volumes:
       # Private SQLite database, cache, and backups.
       - ${APP_DATA_DIR}/data/config:/config

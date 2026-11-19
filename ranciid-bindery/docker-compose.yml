@@ -28,7 +28,7 @@ services:
       - ${UMBREL_ROOT}/data/storage/downloads:/downloads
 
   server:
-    image: ghcr.io/ranciid/bindery-kindle:1.52.0-kindle.1
+    image: ghcr.io/ranciid/bindery-kindle:1.52.0-kindle.2
     restart: unless-stopped
     init: true
     user: "1000:1000"

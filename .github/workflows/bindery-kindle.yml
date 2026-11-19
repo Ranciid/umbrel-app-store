@@ -64,9 +64,9 @@ jobs:
           file: ./upstream/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           platforms: ${{ github.event_name == 'pull_request' && 'linux/amd64' || 'linux/amd64,linux/arm64' }}
-          tags: ghcr.io/ranciid/bindery-kindle:1.52.0-kindle.1
+          tags: ghcr.io/ranciid/bindery-kindle:1.52.0-kindle.2
           build-args: |
-            VERSION=1.52.0-kindle.1
+            VERSION=1.52.0-kindle.2
             COMMIT=${{ github.sha }}
           cache-from: type=gha,scope=bindery-kindle
           cache-to: type=gha,mode=max,scope=bindery-kindle

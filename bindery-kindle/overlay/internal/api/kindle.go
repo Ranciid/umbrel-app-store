@@ -16,7 +16,6 @@ import (
     "net"
     "net/mail"
     "net/smtp"
-    "net/textproto"
     "os"
     "path/filepath"
     "strconv"
@@ -372,8 +371,10 @@ ORDER BY bf.id ASC LIMIT 100`,baseline)
     _=rows.Close()
     recipients,e:=kindleRecipients(c.Recipients)
     if e!=nil{return}
+    var lastScanned int64
     for _,file:=range files {
         select {case <-ctx.Done(): return;default:}
+        lastScanned=file.FileID
         ext:=strings.ToLower(filepath.Ext(file.Path))
         if ext!=".epub"&&ext!=".pdf"{continue}
         for _,recipient:=range recipients {
@@ -382,6 +383,11 @@ ORDER BY bf.id ASC LIMIT 100`,baseline)
             if e:=h.sendRow(ctx,file,recipient,false);e!=nil && !errors.Is(e,errKindleAlreadyAttempted) {
                 slog.Warn("kindle: auto-send failed","bookID",file.BookID,"error",e)
             }
+        }
+    }
+    if lastScanned>0 {
+        if e:=h.settings.Set(ctx,"kindle.auto_after_file_id",strconv.FormatInt(lastScanned,10));e!=nil {
+            slog.Warn("kindle: failed to update delivery watermark","error",e)
         }
     }
 }
@@ -449,6 +455,3 @@ func sendKindleSMTP(c kindleConfig,to,subject string,attachment []byte,ext strin
     return nil
 }
 
-// Keep the settings API opaque to non-admins: this dedicated handler is behind
-// auth.RequireAdmin, and only reports PasswordSet, not the SMTP password itself.
-var _ = textproto.MIMEHeader{}

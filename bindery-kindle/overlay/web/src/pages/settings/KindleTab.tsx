@@ -42,7 +42,7 @@ export default function KindleTab() {
     reload()
   }, [])
 
-  const update = <K extends keyof KindleConfig>(key: K, value: KindleConfig[K]) =>
+  const update = <K extends keyof KindleConfig,>(key: K, value: KindleConfig[K]) =>
     setConfig(prev => ({ ...prev, [key]: value }))
 
   async function save() {

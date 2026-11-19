@@ -124,6 +124,30 @@ func kindleRecipients(raw string) ([]string,error) {
     return out,nil
 }
 
+// selectKindleRecipients restricts a manual delivery to configured addresses.
+// The caller cannot use the send endpoint as an arbitrary SMTP relay.
+func selectKindleRecipients(configured string, selected []string) ([]string,error) {
+    allowed,err:=kindleRecipients(configured)
+    if err!=nil{return nil,err}
+    if len(selected)==0 || len(selected)>len(allowed) {
+        return nil,errors.New("select one or more configured Kindle devices")
+    }
+    choices:=make(map[string]struct{},len(allowed))
+    for _,addr:=range allowed {choices[addr]=struct{}{}}
+    seen:=make(map[string]struct{},len(selected))
+    result:=make([]string,0,len(selected))
+    for _,raw:=range selected {
+        addr,err:=validEmail(raw)
+        if err!=nil{return nil,errors.New("invalid Kindle recipient selection")}
+        addr=strings.ToLower(addr)
+        if _,ok:=choices[addr];!ok{return nil,errors.New("selected Kindle address is not configured")}
+        if _,ok:=seen[addr];ok{return nil,errors.New("duplicate Kindle recipient selection")}
+        seen[addr]=struct{}{}
+        result=append(result,addr)
+    }
+    return result,nil
+}
+
 func (c kindleConfig) validate() error {
     host:=strings.TrimSpace(c.Host)
     if host=="" || strings.ContainsAny(host,"/:@ \r\n\t") { return errors.New("invalid SMTP hostname") }
@@ -140,6 +164,24 @@ func (h *KindleHandler) Config(w http.ResponseWriter,r *http.Request) {
     w.Header().Set("Cache-Control","no-store")
     w.Header().Set("Content-Type","application/json")
     _=json.NewEncoder(w).Encode(c)
+}
+
+// Recipients is a minimal, administrator-only read endpoint for the per-book
+// device picker. SMTP passwords and other configuration are not returned.
+func (h *KindleHandler) Recipients(w http.ResponseWriter,r *http.Request) {
+    configured:=h.setting(r.Context(),"kindle.recipients","")
+    addresses:=make([]string,0)
+    if configured!="" {
+        var err error
+        addresses,err=kindleRecipients(configured)
+        if err!=nil {
+            http.Error(w,"invalid configured Kindle recipient list",http.StatusConflict)
+            return
+        }
+    }
+    w.Header().Set("Content-Type","application/json")
+    w.Header().Set("Cache-Control","no-store")
+    _=json.NewEncoder(w).Encode(map[string][]string{"recipients":addresses})
 }
 
 func (h *KindleHandler) SaveConfig(w http.ResponseWriter,r *http.Request) {
@@ -275,38 +317,67 @@ func (h *KindleHandler) finish(ctx context.Context,id int64,recipient,status,msg
         slog.Error("kindle: could not record send result","error",err)
     }
 }
+// Each selected recipient gets a result, so a duplicate for one Kindle
+// does not block delivery to another selected Kindle. Force is explicit and
+// should only be used after the UI asks the user to confirm a resend.
+type kindleRecipientOutcome struct {
+    Recipient string `json:"recipient"`
+    Status string `json:"status"`
+    Error string `json:"error,omitempty"`
+}
 func (h *KindleHandler) SendBook(w http.ResponseWriter,r *http.Request) {
     id,e:=strconv.ParseInt(chi.URLParam(r,"id"),10,64)
     if e!=nil || id<=0 {http.Error(w,"invalid book id",400);return}
     c:=h.config(r.Context())
     if e:=c.validate();e!=nil {http.Error(w,e.Error(),400);return}
+
+    var payload struct {
+        Recipients []string `json:"recipients"`
+    }
+    dec:=json.NewDecoder(http.MaxBytesReader(w,r.Body,4096))
+    dec.DisallowUnknownFields()
+    if e:=dec.Decode(&payload);e!=nil {
+        http.Error(w,"provide a list of selected Kindle recipients",400);return
+    }
+    var extra any
+    if e:=dec.Decode(&extra);e!=io.EOF {
+        http.Error(w,"unexpected data after recipient selection",400);return
+    }
+    recipients,e:=selectKindleRecipients(c.Recipients,payload.Recipients)
+    if e!=nil {http.Error(w,e.Error(),400);return}
+
     b,e:=h.books.GetByID(r.Context(),id)
     if e!=nil {http.Error(w,"cannot load book",500);return}
     if b==nil {http.NotFound(w,r);return}
     if b.EbookFilePath=="" {http.Error(w,"book has no tracked ebook file",409);return}
-    var file kindleSend
-    file.BookID=b.ID;file.Title=b.Title;file.Path=b.EbookFilePath
+    file:=kindleSend{BookID:b.ID,Title:b.Title,Path:b.EbookFilePath}
     if e:=h.database.QueryRowContext(r.Context(),
         "SELECT id FROM book_files WHERE book_id=? AND format='ebook' AND path=?",
         b.ID,b.EbookFilePath).Scan(&file.FileID);e!=nil {
         http.Error(w,"ebook file is not tracked in Bindery",409);return
     }
-    recipients,e:=kindleRecipients(c.Recipients)
-    if e!=nil {http.Error(w,e.Error(),400);return}
+
     force:=r.URL.Query().Get("force")=="1"
+    results:=make([]kindleRecipientOutcome,0,len(recipients))
     for _,recipient:=range recipients {
+        outcome:=kindleRecipientOutcome{Recipient:recipient,Status:"smtp_accepted"}
         if e:=h.sendRow(r.Context(),file,recipient,force);e!=nil {
             if errors.Is(e,errKindleAlreadyAttempted) {
-                http.Error(w,"Already attempted. Confirm an explicit resend to avoid duplicates.",409)
-            }else{
-                slog.Warn("kindle: manual delivery failed","bookID",b.ID,"error",e)
-                http.Error(w,"Kindle SMTP send failed: "+e.Error(),502)
+                outcome.Status="already_attempted"
+            }else {
+                slog.Warn("kindle: manual delivery failed","bookID",b.ID,"recipient",recipient,"error",e)
+                outcome.Status="failed"
+                outcome.Error=e.Error()
             }
-            return
         }
+        results=append(results,outcome)
     }
     w.Header().Set("Content-Type","application/json")
-    _,_=io.WriteString(w,`{"status":"smtp_accepted","message":"SMTP accepted the document; Amazon processing and device sync are not guaranteed."}`)
+    w.Header().Set("Cache-Control","no-store")
+    _=json.NewEncoder(w).Encode(map[string]any{
+        "results":results,
+        "message":"SMTP acceptance does not confirm Amazon processing or Kindle device sync.",
+    })
 }
 
 func (h *KindleHandler) History(w http.ResponseWriter,r *http.Request) {
